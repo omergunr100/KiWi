@@ -35,7 +35,7 @@ public class Cell implements Comparable<Cell>
 	{
 		if (length == 0) return "Empty";
 		
-		// TODO remove this method! works only for INTEGER!
+		//  remove this method! works only for INTEGER!
 		int n = bytes[offset] << 24 | (bytes[offset+1] & 0xFF) << 16 |
 				(bytes[offset+2] & 0xFF) << 8 | (bytes[offset+3] & 0xFF);
 		return n+"";
