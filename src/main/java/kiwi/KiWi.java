@@ -369,7 +369,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 			// if scan was published but didn't yet CAS its version - help it
 			if (currScan.version.get() == Chunk.NONE)
 			{
-				// TODO: understand if we need to increment here
+				// understand if we need to increment here
 				int ver = version.getAndIncrement();
 				currScan.version.compareAndSet(Chunk.NONE, ver);
 			}
@@ -415,7 +415,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 	}
 
 	private ScanIndex updateAndGetPendingScans(int currVersion, List<Chunk<K, V>> engaged) {
-		// TODO: implement versions selection by key
+		// implement versions selection by key
 		K minKey = engaged.get(0).minKey;
 		Chunk<K,V> nextToRange= engaged.get(engaged.size() -1).next.getReference();
 		K maxKey =  nextToRange == null ? null : nextToRange.minKey;
@@ -481,7 +481,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 			// if didn't succeed to find preve through the skip list -- start from the head
 			if(prev == null || curr != firstEngaged) {
 				prev = null;
-				curr = skiplist.firstEntry().getValue();    // TODO we can store&update head for a little efficiency
+				curr = skiplist.firstEntry().getValue();    // we can store&update head for a little efficiency
 				// iterate until found chunk or reached end of list
 				while ((curr != firstEngaged) && (curr != null)) {
 					prev = curr;

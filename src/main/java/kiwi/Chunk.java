@@ -214,7 +214,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		// thus, (ThreadID % MAX_THREADS) will return a unique index for each thread in range [0, MAX_THREADS)
 		int idx = (int) (Thread.currentThread().getId() % KiWi.MAX_THREADS);
 
-		// TODO verify the assumption about sequential IDs
+		// verify the assumption about sequential IDs
 
 		// publish into thread array
 		putArray[pad(idx)] = data;
@@ -348,7 +348,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		this.rebalancer = new AtomicReference<Rebalancer<K,V>>(null); // to be updated on rebalance
 		this.statistics = new Statistics();
 
-		// TODO allocate space for minKey inside chunk (pointed by skiplist)?
+		// allocate space for minKey inside chunk (pointed by skiplist)?
 	}
 	
 	/** static constructor - access and create a new instance of Unsafe */
@@ -533,7 +533,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		if ((sortedCount == 0) || (readKey(FIRST_ITEM).compareTo(key) >= 0))
 			return HEAD_NODE;
 		
-		// TODO check last key to avoid binary search?
+		// check last key to avoid binary search?
 
 		int start = 0;
 		int end = sortedCount;
@@ -826,7 +826,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 				// if found item we're trying to insert - already inserted by someone else, so we're done
 				if (curr == orderIndex)
 					return;
-					//TODO also update version to positive?
+					// also update version to positive?
 				
 				// compare current item's key to ours
 				cmp = readKey(curr).compareTo(key);

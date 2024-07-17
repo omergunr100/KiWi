@@ -257,7 +257,7 @@ public class ZipfianGenerator extends IntegerGenerator
 					//have to start over with zetan
 					//note : for large itemsets, this is very slow. so don't do it!
 
-					//TODO: can also have a negative incremental computation, e.g. if you decrease the number of items, then just subtract
+					//can also have a negative incremental computation, e.g. if you decrease the number of items, then just subtract
 					//the zeta sequence terms for the items that went away. This would be faster than recomputing from scratch when the number of items
 					//decreases
 					
@@ -319,7 +319,7 @@ public class ZipfianGenerator extends IntegerGenerator
 	}
 
 	/**
-	 * @todo Implement ZipfianGenerator.mean()
+	 * Implement ZipfianGenerator.mean()
 	 */
 	@Override
 	public double mean() {
