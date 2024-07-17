@@ -73,6 +73,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		// find chunk matching key
 		Chunk<K,V> c = skiplist.floorEntry(key).getValue();
 		
+        // todo: get rid of while(true) loop
 		// repeat until put operation is successful
 		while (true)
 		{
@@ -436,7 +437,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		// update from infant to normal
 		firstCompacted.creator = null;
 		Chunk.unsafe.storeFence();
-
+        
 		// remove all old chunks from index.
 		// compacted chunks are still accessible through the first updated chunk
 		while(iterEngaged.hasNext())
@@ -447,11 +448,11 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 
 		// for simplicity -  naive lock implementation
 		// can be implemented without locks using versions on next pointer in  skiplist
-
+        
 		while(iterCompacted.hasNext())
 		{
 			Chunk<K,V> compactedToAdd = iterCompacted.next();
-
+            // todo: ignore (out of scope)
 			synchronized (compactedToAdd)
 			{
 				skiplist.putIfAbsent(compactedToAdd.minKey,compactedToAdd);
@@ -466,6 +467,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 
 		Chunk<K,V> firstEngaged = engaged.get(0);
 
+        // todo: get rid of while(true) loop
 		// replace in linked list - we now need to find previous chunk to our chunk
 		// and CAS its next to point to c1, which is the same c1 for all threads who reach this point.
 		// since prev might be marked (in compact itself) - we need to repeat this until successful
