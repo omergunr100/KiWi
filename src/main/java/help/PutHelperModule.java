@@ -15,14 +15,12 @@ public final class PutHelperModule<K extends Comparable<? super K>, V> {
         this.putHelpArr = new AtomicReferenceArray<>(MAX_THREADS);
     }
     
-    // returns the first request for help or null if none exist
-    public PutHelpData<K, V> FindHelpRequest() {
-        PutHelpData<K, V> content = null;
-        for (int i = 0; i < MAX_THREADS; i++) {
-            content = putHelpArr.get(i);
-            if (content != null) doSomething(content);
-        }
-        return content;
+    // returns a snapshot of the help requests array
+    public PutHelpData<K, V>[] GetHelpArrSnapshot() {
+        PutHelpData<K, V>[] arr = new PutHelpData[MAX_THREADS];
+        for (int i = 0; i < MAX_THREADS; i++) 
+            arr[i] = putHelpArr.get(i);
+        return arr;
     }
     
     // adds a new help request to the array
@@ -34,12 +32,20 @@ public final class PutHelperModule<K extends Comparable<? super K>, V> {
     // try to complete a request for help, returns true if found and deleted from array
     public boolean CompleteHelp(PutHelpData<K, V> helpData) {
         boolean found = false;
-        for (int i = 0; i < MAX_THREADS && !found; i++) found = putHelpArr.compareAndSet(i, helpData, null);
+        for (int i = 0; i < MAX_THREADS; i++) found |= putHelpArr.compareAndSet(i, helpData, null);
+        return found;
+    }
+    
+    // check if the request is still waiting for completion
+    public boolean FindRequest(PutHelpData<K, V> helpData) {
+        boolean found = false;
+        for (int i = 0; i < MAX_THREADS && !found; i++)
+            if (putHelpArr.get(i) == helpData)
+                found = true;
         return found;
     }
     
     // get keys in range
-    // todo: check how deletions are handled, might have to add edge case for null in entry value
     public List<PutHelpData<K, V>> GetKeysInRange(K min, K max, int version) {
         List<PutHelpData<K, V>> keyList = new ArrayList<>(MAX_THREADS / 2);
         PutHelpData<K, V> content = null;
