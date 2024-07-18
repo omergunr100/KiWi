@@ -1,5 +1,7 @@
 package kiwi;
 
+import help.PutHelpData;
+import help.PutHelperModule;
 import kiwi.ThreadData.PutData;
 import kiwi.ThreadData.ScanData;
 
@@ -20,8 +22,8 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 	protected AtomicInteger 							version;		// current version to add items with
 	private final boolean								withScan;		// support scan operations or not (scans add thread-array)
 	private final ScanData[]		scanArray;
-
-
+    
+    private final PutHelperModule<K, V> putHelper;
 	/*************** Constructors ***************/
 	public KiWi(Chunk<K,V> head)
 	{
@@ -36,6 +38,8 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 
 		this.skiplist.put(head.minKey, head);	// add first chunk (head) into skiplist
 		this.withScan = withScan;
+        
+        this.putHelper = new PutHelperModule<>(MAX_THREADS);
 
 		if (withScan) {
 			//this.threadArray = new ThreadData[MAX_THREADS];
@@ -227,9 +231,11 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		// the newVersion() method is used to ensure my version is published correctly,
 		// so concurrent split ops will not compact items with this version (ensuring linearizability)
 		int myVer = newVersion(min, max);
+        
+        // get a snapshot of the help requests array
+        List<PutHelpData<K, V>> putHelpData = putHelper.GetKeysInRange(min, max, myVer);
 
-
-		// find chunk matching min key, to start iterator there
+        // find chunk matching min key, to start iterator there
 		Chunk<K,V> c = skiplist.floorEntry(min).getValue();
 		c = iterateChunks(c, min);
 
@@ -244,8 +250,15 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 			// (so old put() op doesn't suddently set an old version this scan() needs to see,
 			//  but after the scan() passed it)
 			SortedMap<K,PutData<K,V>> items = c.helpPutInScan(myVer, min, max);
-
-			itemsCount += c.copyValues(result, itemsCount, myVer, min, max, items);
+            Object[] keys = new Object[result.length];
+            int[] versions = new int[result.length];
+			itemsCount += c.copyValues(keys, result, versions, itemsCount, myVer, min, max, items);
+            // add relevant values and remove irrelevant ones from the result according to the help requests
+            for (int i = 0; i < itemsCount; i++) {
+                int version = versions[i];
+                K key = (K) keys[i];
+                if (putHelpData.)
+            }
 			c = c.next.getReference();
 		}
 
