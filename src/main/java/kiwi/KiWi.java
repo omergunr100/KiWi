@@ -60,7 +60,14 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 	
 	public V get(K key)
 	{
-		// find chunk matching key
+        // search for the key in the put help requests array
+        List<PutHelpData<K, V>> putHelpData = putHelper.GetKeysInRange(key, key, version.get());
+        if (!putHelpData.isEmpty()) {
+            PutHelpData<K, V> content = putHelpData.get(0);
+            return content.value;
+        }
+
+        // find chunk matching key
 		Chunk<K,V> c = skiplist.floorEntry(key).getValue();
 		c = iterateChunks(c, key);
 
