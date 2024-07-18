@@ -190,8 +190,7 @@ public class Rebalancer<K extends Comparable<? super K>,V> {
     {
         // the policy object will store first, last refs of engaged range
         Policy p = createPolicy(startChunk);
-
-        // todo: get rid of while(true) loop
+        
         while(true)
         {
             Chunk<K,V> next = nextToEngage.get();
