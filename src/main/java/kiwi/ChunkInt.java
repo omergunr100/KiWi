@@ -68,7 +68,7 @@ public class ChunkInt extends Chunk<Integer,Integer>
 	}
 
 	@Override
-	public int copyValues(Object[] result, int idx, int myVer, Integer min, Integer max, SortedMap<Integer, ThreadData.PutData<Integer,Integer>> items) {
+	public int copyValues(Object[] keys, Object[] values, int idx, int myVer, Integer min, Integer max, SortedMap<Integer, ThreadData.PutData<Integer,Integer>> items) {
 		int oi = 0;
 
 		if(idx == 0)
@@ -92,6 +92,8 @@ public class ChunkInt extends Chunk<Integer,Integer>
 		int oiPrev = NONE;
 		int prevDataId = NONE;
 		int currDataId = dataStart;
+        
+        int keyArrInd = 0;
 
 
 	    boolean isFirst = dataStart > 0 ? true : false ;
@@ -125,9 +127,13 @@ public class ChunkInt extends Chunk<Integer,Integer>
 
 				oiPrev = oi;
 				oi = get(oi, OFFSET_NEXT);
-
+                
 				prevKey = currKey;
 				prevDataId = currDataId;
+                
+                // add key to keys array
+                keys[idx+keyArrInd] = currKey;
+                
 				currKey = get(oi,OFFSET_KEY);
 				currDataId = get(oi,OFFSET_DATA);
 
@@ -139,11 +145,11 @@ public class ChunkInt extends Chunk<Integer,Integer>
 
 				if(itemsToCopy == 1)
 				{
-					result[idx+itemCount] =  dataArray[dataStart];
+					values[idx+itemCount] =  dataArray[dataStart];
 				}
 				else if(itemsToCopy > 1)
 				{
-					System.arraycopy(dataArray, dataStart, result, idx + itemCount, itemsToCopy);
+					System.arraycopy(dataArray, dataStart, values, idx + itemCount, itemsToCopy);
 				}
 
 				itemCount += itemsToCopy;
@@ -186,7 +192,7 @@ public class ChunkInt extends Chunk<Integer,Integer>
 		}
 
 		int itemsToCopy = dataEnd -dataStart + 1;
-		System.arraycopy(dataArray,dataStart, result, idx + itemCount, itemsToCopy);
+		System.arraycopy(dataArray,dataStart, values, idx + itemCount, itemsToCopy);
 
 		itemCount+= itemsToCopy;
 

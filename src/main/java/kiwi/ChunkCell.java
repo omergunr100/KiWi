@@ -36,7 +36,7 @@ public class ChunkCell extends Chunk<Cell, Cell>
 	}
 
 	@Override
-	public int copyValues(Object[] result, int idx, int myVer, Cell min, Cell max, SortedMap<Cell, ThreadData.PutData<Cell, Cell>> items) {
+	public int copyValues(Object[] keys, Object[] values, int idx, int myVer, Cell min, Cell max, SortedMap<Cell, ThreadData.PutData<Cell, Cell>> items) {
 		throw new NotImplementedException();
 	}
 

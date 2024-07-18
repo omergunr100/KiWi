@@ -80,7 +80,8 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		return cas(oi,OFFSET_VERSION, NONE, FREEZE_VERSION);
 	}
 
-	public abstract int copyValues(Object[] result, final int idx, final int myVer, final K min, final K max, final SortedMap<K,PutData<K,V>> items);
+    // todo: notice changed results to values and added a keys return parameter
+	public abstract int copyValues(Object[] keys, Object[] values, final int idx, final int myVer, final K min, final K max, final SortedMap<K,PutData<K,V>> items);
 
 	/** this method is used by scan operations (ONLY) to help pending put operations set a version
 	 * @return sorted map of items matching key range of any currently-pending put operation */
