@@ -239,10 +239,12 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		Chunk<K,V> c = skiplist.floorEntry(min).getValue();
 		c = iterateChunks(c, min);
 
-		int itemsCount = 0;
-		while(true)
+        Object[] keys = new Object[result.length];
+        ArrayList<Integer> removeInds = new ArrayList<>();
+        
+        int itemsCount = 0;
+        while(true)
 		{
-
 			if(c == null || c.minKey.compareTo(max)>0)
 				break;
 
@@ -250,18 +252,51 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 			// (so old put() op doesn't suddently set an old version this scan() needs to see,
 			//  but after the scan() passed it)
 			SortedMap<K,PutData<K,V>> items = c.helpPutInScan(myVer, min, max);
-            Object[] keys = new Object[result.length];
-            int[] versions = new int[result.length];
-			itemsCount += c.copyValues(keys, result, versions, itemsCount, myVer, min, max, items);
-            // add relevant values and remove irrelevant ones from the result according to the help requests
-            for (int i = 0; i < itemsCount; i++) {
-                int version = versions[i];
-                K key = (K) keys[i];
-                if (putHelpData.)
-            }
+			itemsCount += c.copyValues(keys, result, itemsCount, myVer, min, max, items);
+            
 			c = c.next.getReference();
 		}
-
+        
+        // try to match results to values in the help array
+        for (int i = 0; i < putHelpData.size(); i++) {
+            PutHelpData<K, V> content = putHelpData.get(i);
+            boolean found = false;
+            for (int j = 0; j < itemsCount && !found; j++) {
+                K key = (K) keys[j];
+                if (content.key.equals(key)) {
+                    found = true;
+                    // appears in the data-structure and is in need of help
+                    if (content.value == null) {
+                        // delete from results because there's a newer request to delete the value
+                        removeInds.add(j);
+                    }
+                    else {
+                        // it is a newer put request, update the result to its value
+                        result[j] = content.value;
+                    }
+                }
+            }
+            if (!found) {
+                // doesn't appear in the data-structure but is in need of help
+                keys[itemsCount] = content.key;
+                result[itemsCount] = content.value;
+                itemsCount++;
+            }
+        }
+        
+        // remove indices to remove
+        Object[] temp = new Object[result.length];
+        int offset = 0;
+        for (int i = 0; i < result.length; i++) {
+            if (removeInds.contains(i)) {
+                offset++;
+            }
+            else {
+                temp[i - offset] = result[i];
+            }
+        }
+        System.arraycopy(temp, 0, result, 0, result.length);
+        
 		// remove scan from scan array
 		publishScan(null);
 
