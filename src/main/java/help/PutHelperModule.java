@@ -40,8 +40,8 @@ public final class PutHelperModule<K extends Comparable<? super K>, V> {
     
     // get keys in range
     // todo: check how deletions are handled, might have to add edge case for null in entry value
-    public List<K> GetKeysInRange(K min, K max, int version) {
-        List<K> keyList = new ArrayList<>(MAX_THREADS / 2);
+    public List<PutHelpData<K, V>> GetKeysInRange(K min, K max, int version) {
+        List<PutHelpData<K, V>> keyList = new ArrayList<>(MAX_THREADS / 2);
         PutHelpData<K, V> content = null;
         for (int i = 0; i < MAX_THREADS; i++) {
             content = putHelpArr.get(i);
@@ -50,7 +50,7 @@ public final class PutHelperModule<K extends Comparable<? super K>, V> {
             // if the version is newer than that of the scan, skip
             if (content.version > version) continue;
             // else if the entry key is in range add to the list
-            if (min.compareTo(content.key) <= 0 && content.key.compareTo(max) <= 0) keyList.add(content.key);
+            if (min.compareTo(content.key) <= 0 && content.key.compareTo(max) <= 0) keyList.add(content);
         }
         return keyList;
     }
