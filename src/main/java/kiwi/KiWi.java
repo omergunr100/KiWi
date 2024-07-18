@@ -79,14 +79,123 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		return c.find(key, pd);
 	}
 
+    // our put method that takes a PutHelpData and tries to add it to data-structure
+    public boolean put(PutHelpData<K, V> putHelpData) {
+        K key = putHelpData.key;
+        V value = putHelpData.value;
+        int version = putHelpData.version;
+
+        // find chunk matching key
+        Chunk<K,V> c = skiplist.floorEntry(key).getValue();
+        
+        // repeat until put operation is successful
+        for (int i = 0; i < 10; i++)
+        {
+            // the chunk we have might have been in part of split so not accurate
+            // we need to iterate the chunks to find the correct chunk following it
+            c = iterateChunks(c, key);
+
+            // if chunk is infant chunk (has a parent), we can't add to it
+            // we need to help finish compact for its parent first, then proceed
+            {
+                Chunk<K,V> parent = c.creator;
+                if (parent != null) {
+                    if (rebalance(parent) == null)
+                        return false;
+                }
+            }
+
+            // allocate space in chunk for key & value
+            // this also writes key&val into the allocated space
+            int oi = c.allocate(key, value);
+
+            // if failed - chunk is full, compact it & retry
+            if (oi < 0)
+            {
+                c = rebalance(c);
+                if (c == null)
+                    return false;
+                continue;
+            }
+
+            if (withScan)
+            {
+                // publish put operation in thread array
+                // publishing BEFORE setting the version so that other operations can see our value and help
+                // this is in order to prevent us from adding an item with an older version that might be missed by others (scan/get)
+                c.publishPut(new PutData<>(c, oi));
+
+
+                if(c.isFreezed())
+                {
+                    // if succeeded to freeze item -- it is not accessible, need to reinsert it in rebalanced chunk
+                    if(c.tryFreezeItem(oi)) {
+                        c.publishPut(null);
+                        c = rebalance(c);
+
+                        continue;
+                    }
+                }
+            }
+
+            // try to update the version to current version, but use whatever version is successfuly set
+            // reading & setting version AFTER publishing ensures that anyone who sees this put op has
+            // a version which is at least the version we're setting, or is otherwise setting the version itself
+            int myVersion = c.setVersion(oi, version);
+
+            // if chunk is frozen, clear published data, compact it and retry
+            // (when freezing, version is set to FREEZE)
+            if (myVersion == Chunk.FREEZE_VERSION)
+            {
+                // clear thread-array item if needed
+                c.publishPut(null);
+                c = rebalance(c);
+                continue;
+            }
+
+            // allocation is done (and published) and has a version
+            // all that is left is to insert it into the chunk's linked list
+            c.addToList(oi, key);
+
+            // delete operation from thread array - and done
+            c.publishPut(null);
+
+            if(shouldRebalance(c))
+                rebalance(c);
+
+            return true;
+        }
+        return false;
+    }
+    
 	public void put(K key, V val)
 	{
-		// find chunk matching key
+        // get a snapshot of the help requests array
+        PutHelpData<K, V>[] putHelpData = putHelper.GetHelpArrSnapshot();
+
+        for (PutHelpData<K, V> content : putHelpData) {
+            if (content == null) continue;
+            boolean success;
+            do {
+                // check that the request is still waiting for completion
+                if (!putHelper.FindRequest(content)) break;
+                
+                // unsuccessfully added to the data-structure, that means someone else managed to change the chunk
+                // in this case someone made progress, we should retry because at most all the other threads are doing
+                // their own changes but later everyone will try to help this one request and someone will succeed
+                success = put(content);
+                if (success) {
+                    // successfully added to the data-structure, should complete help request
+                    putHelper.CompleteHelp(content);
+                }
+            } while (!success);
+        }
+        
+        // find chunk matching key
 		Chunk<K,V> c = skiplist.floorEntry(key).getValue();
-		
-        // todo: get rid of while(true) loop
+        
 		// repeat until put operation is successful
-		while (true)
+        for (int i = 0; i < 10; i++)
 		{
 			// the chunk we have might have been in part of split so not accurate
 			// we need to iterate the chunks to find the correct chunk following it
@@ -162,6 +271,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 
 			break;
 		}
+        putHelper.RequestHelp(new PutHelpData<>(key, val, version.get()));
 	}
 
 	private boolean shouldRebalance(Chunk<K, V> c) {
@@ -521,8 +631,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		updateLastChild(engaged,children);
 
 		Chunk<K,V> firstEngaged = engaged.get(0);
-
-        // todo: get rid of while(true) loop
+        
 		// replace in linked list - we now need to find previous chunk to our chunk
 		// and CAS its next to point to c1, which is the same c1 for all threads who reach this point.
 		// since prev might be marked (in compact itself) - we need to repeat this until successful
