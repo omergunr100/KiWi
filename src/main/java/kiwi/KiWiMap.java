@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * Created by msulamy on 7/27/15.
  */
@@ -119,28 +117,28 @@ public class KiWiMap implements CompositionalMap<Integer,Integer>
     @Override
     public Set<Integer> keySet()
     {
-        throw new NotImplementedException();
+        return null;
     }
 
     /** Not implemented - can scan all & return values **/
     @Override
     public Collection<Integer> values()
     {
-        throw new NotImplementedException();
+        return null;
     }
 
     /** Not implemented - can scan all & create entries **/
     @Override
     public Set<Entry<Integer,Integer>> entrySet()
     {
-        throw new NotImplementedException();
+        return null;
     }    
 
     /** Not implemented - can scan all & search **/
     @Override
     public boolean containsValue(Object o)
     {
-    	throw new NotImplementedException();
+    	return false;
     }
 
     public void compactAllSerial()

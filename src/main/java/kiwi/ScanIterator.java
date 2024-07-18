@@ -1,7 +1,6 @@
 package kiwi;
 
 import kiwi.ThreadData.PutData;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -183,7 +182,7 @@ public class ScanIterator<K extends Comparable<? super K>,V> implements Iterator
 				return valItems;
 		}
 		*/
-		throw new NotImplementedException();
+		return null;
 	}
 	
 	private V nextFromMap()
@@ -210,7 +209,7 @@ public class ScanIterator<K extends Comparable<? super K>,V> implements Iterator
 		
 		return pd.chunk.getData(pd.orderIndex);
 		*/
-		throw new NotImplementedException();
+		return null;
 	}
 	private V nextFromChunks()
 	{
@@ -234,6 +233,5 @@ public class ScanIterator<K extends Comparable<? super K>,V> implements Iterator
 	@Override
 	public void remove()
 	{
-		throw new NotImplementedException();
 	}
 }

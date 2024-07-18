@@ -17,8 +17,6 @@
 
 package util;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * A generator of a zipfian distribution. It produces a sequence of items, such that some items are more popular than others, according
  * to a zipfian distribution. When you construct an instance of this class, you specify the number of items in the set to draw from, either
@@ -300,7 +298,7 @@ public class ZipfianGenerator extends IntegerGenerator
 
 	@Override
 	public Pair<Integer, Integer> nextInterval() {
-		throw new NotImplementedException();
+		return null;
 	}
 
 	/**

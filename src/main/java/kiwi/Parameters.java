@@ -1,6 +1,5 @@
 package kiwi;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import util.CombinedGenerator;
 import util.IntegerGenerator;
 import util.Pair;
@@ -38,13 +37,13 @@ public class Parameters {
 		ScrambledZipfian {
 			@Override
 			public IntegerGenerator createGenerator(int min, int max) {
-				throw new NotImplementedException();
+				return null;
 			}
 		},
 		SkewedLatest {
 			@Override
 			public IntegerGenerator createGenerator(int min, int max) {
-				throw new NotImplementedException();
+				return null;
 			}
 		},
 		Churn10Perc
@@ -104,7 +103,7 @@ public class Parameters {
 
 			@Override
 			public Pair<Integer, Integer> nextInterval() {
-				throw new NotImplementedException();
+				return null;
 			}
 
 			@Override
@@ -218,12 +217,12 @@ public class Parameters {
 
 			@Override
 			public Pair<Integer, Integer> nextInterval() {
-				throw new NotImplementedException();
+				return null;
 			}
 
 			@Override
 			public double mean() {
-				throw new NotImplementedException();
+				return -1;
 			}
 		}
 	}

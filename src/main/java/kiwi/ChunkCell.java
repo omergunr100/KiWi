@@ -1,7 +1,5 @@
 package kiwi;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.SortedMap;
 
 public class ChunkCell extends Chunk<Cell, Cell>
@@ -26,28 +24,27 @@ public class ChunkCell extends Chunk<Cell, Cell>
 	@Override
 	public Cell readKey(int orderIndex)
 	{
-		throw new NotImplementedException();
+		return null;
 	}
 	@Override
 	public Object readData(int oi, int di)
 	{
-
-		throw new NotImplementedException();
+		return null;
 	}
 
 	@Override
-	public int copyValues(Object[] keys, Object[] values, int[] versions, int idx, int myVer, Cell min, Cell max, SortedMap<Cell, ThreadData.PutData<Cell, Cell>> items) {
-		throw new NotImplementedException();
+	public int copyValues(Object[] keys, Object[] values, int idx, int myVer, Cell min, Cell max, SortedMap<Cell, ThreadData.PutData<Cell, Cell>> items) {
+		return -1;
 	}
 
 	@Override
 	public int allocate(Cell key, Cell data)
 	{
-		throw new NotImplementedException();
+		return -1;
 	}
 
 	@Override
 	public int allocateSerial(int key, Cell data) {
-		throw new NotImplementedException();
+		return -1;
 	}
 }

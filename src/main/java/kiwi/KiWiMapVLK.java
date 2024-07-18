@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * Created by msulamy on 7/27/15.
  */
@@ -66,13 +64,12 @@ public class KiWiMapVLK implements CompositionalMap<Integer,Integer>
     @Override
     public void putAll(Map<? extends Integer, ? extends Integer> map)
     {
-    	throw new NotImplementedException();
     }
 
     @Override
     public int getRange(Integer[] result, Integer min, Integer max)
     {
-        throw new NotImplementedException();
+        return -1;
     }
     
     /** Same as get(key) != null **/
@@ -94,21 +91,21 @@ public class KiWiMapVLK implements CompositionalMap<Integer,Integer>
     @Override
     public Set<Integer> keySet()
     {
-        throw new NotImplementedException();
+        return null;
     }
 
     /** Scan all & return values **/
     @Override
     public Collection<Integer> values()
     {
-        throw new NotImplementedException();
+        return null;
     }
 
     /** Scan all & create entries **/
     @Override
     public Set<Entry<Integer,Integer>> entrySet()
     {
-        throw new NotImplementedException();
+        return null;
     }    
 
     /** Scan all & search **/

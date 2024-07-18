@@ -17,8 +17,6 @@
 
 package util;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -50,7 +48,7 @@ public class CounterGenerator extends IntegerGenerator
 
 	@Override
 	public Pair<Integer, Integer> nextInterval() {
-		throw new NotImplementedException();
+		return null;
 	}
 
 	@Override

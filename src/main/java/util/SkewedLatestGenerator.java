@@ -17,8 +17,6 @@
 
 package util;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * Generate a popularity distribution of items, skewed to favor recent items significantly more than older items.
  */
@@ -47,7 +45,7 @@ public class SkewedLatestGenerator extends IntegerGenerator
 
 	@Override
 	public Pair<Integer, Integer> nextInterval() {
-		throw new NotImplementedException();
+		return null;
 	}
 
 	public static void main(String[] args)
