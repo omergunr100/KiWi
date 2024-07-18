@@ -32,8 +32,12 @@ public class TestKiWi extends Thread {
                 while (true) {
                     if(interrupted()) return;
                     int key = random.nextInt(min_key, max_key);
-                    int value = random.nextInt(min_key, max_key);
-                    kiwi.put(key, value);
+                    if (random.nextFloat() < 0.5) {
+                        int value = random.nextInt();
+                        kiwi.put(key, value);
+                    }
+                    else 
+                        kiwi.remove(key);
                     counter++;
                 }
             }
@@ -49,7 +53,7 @@ public class TestKiWi extends Thread {
                 while (true) {
                     if(interrupted()) return;
                     int min = random.nextInt(min_key, max_key - 32_000);
-                    int max = min_key + 32_000;
+                    int max = min + 32_000;
                     Integer[] result = new Integer[max - min + 1];
                     kiwi.getRange(result, min, max);
                     counter++;
@@ -82,6 +86,6 @@ public class TestKiWi extends Thread {
             }
         }
         // sum up all thread operations and return
-        System.out.println("Total operations: " + Arrays.stream(threads).mapToLong(t -> t.counter).sum());
+        System.out.println("Total operations of " + action + " for " + threadsCount + " threads: " + Arrays.stream(threads).mapToLong(t -> t.counter).sum());
     }
 }
