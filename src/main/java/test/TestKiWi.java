@@ -1,4 +1,5 @@
-import kiwi.KiWi;
+package test;
+
 import kiwi.KiWiMap;
 
 import java.util.Arrays;
@@ -86,6 +87,6 @@ public class TestKiWi extends Thread {
             }
         }
         // sum up all thread operations and return
-        System.out.println("Total operations of " + action + " for " + threadsCount + " threads: " + Arrays.stream(threads).mapToLong(t -> t.counter).sum());
+        System.out.println(action + ", " + threadsCount + ", " + Arrays.stream(threads).mapToLong(t -> t.counter).sum());
     }
 }
