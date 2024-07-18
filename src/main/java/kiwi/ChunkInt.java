@@ -68,7 +68,7 @@ public class ChunkInt extends Chunk<Integer,Integer>
 	}
 
 	@Override
-	public int copyValues(Object[] keys, Object[] values, int idx, int myVer, Integer min, Integer max, SortedMap<Integer, ThreadData.PutData<Integer,Integer>> items) {
+	public int copyValues(Object[] keys, Object[] values, int[] versions, int idx, int myVer, Integer min, Integer max, SortedMap<Integer, ThreadData.PutData<Integer,Integer>> items) {
 		int oi = 0;
 
 		if(idx == 0)
@@ -125,14 +125,15 @@ public class ChunkInt extends Chunk<Integer,Integer>
 					dataEnd = currDataId < 0 ? dataEnd : dataEnd+1;
 				}
 
+                // add key and version to output arrays
+                keys[idx+keyArrInd] = currKey;
+                versions[idx+keyArrInd] = getVersion(oi);
+                
 				oiPrev = oi;
 				oi = get(oi, OFFSET_NEXT);
                 
 				prevKey = currKey;
 				prevDataId = currDataId;
-                
-                // add key to keys array
-                keys[idx+keyArrInd] = currKey;
                 
 				currKey = get(oi,OFFSET_KEY);
 				currDataId = get(oi,OFFSET_DATA);
