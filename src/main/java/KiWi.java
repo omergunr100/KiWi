@@ -262,7 +262,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 			if(shouldRebalance(c))
 				rebalance(c);
 
-			break;
+			return;
 		}
         putHelper.RequestHelp(new PutHelpData<>(key, val, version.get()));
 	}
