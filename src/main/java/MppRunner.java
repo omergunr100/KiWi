@@ -4,7 +4,7 @@ public class MppRunner {
     final static int MAX_KEY = 10_000_000;
     
     public static void main(String[] args) {
-        System.out.println("Action, Threads, Count");
+        System.out.println("Action, Threads, Count, Slow");
         for (TestKiWi.Action action : TestKiWi.Action.values()) {
             for (int i = 2; i <= 32; i *= 2) {
                 // initialize kiwi map
