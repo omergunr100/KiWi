@@ -28,6 +28,7 @@ public class TestKiWi extends Thread {
     public void run() {
         Random random = new Random();
         random.setSeed(42);
+        int offset = Integer.min(max_key - min_key, 32_000);
         switch (action) {
             case Put -> {
                 while (true) {
@@ -53,8 +54,8 @@ public class TestKiWi extends Thread {
             case Scan -> {
                 while (true) {
                     if(interrupted()) return;
-                    int min = random.nextInt(min_key, max_key - 32_000);
-                    int max = min + 32_000;
+                    int min = random.nextInt(min_key, max_key - offset);
+                    int max = min + offset;
                     Integer[] result = new Integer[max - min + 1];
                     kiwi.getRange(result, min, max);
                     counter++;
