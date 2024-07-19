@@ -23,7 +23,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 	private final boolean								withScan;		// support scan operations or not (scans add thread-array)
 	private final ScanData[]		scanArray;
     
-    private final PutHelperModule<K, V> putHelper;
+    public final PutHelperModule<K, V> putHelper;
 	/*************** Constructors ***************/
 	public KiWi(Chunk<K,V> head)
 	{
@@ -89,7 +89,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
         Chunk<K,V> c = skiplist.floorEntry(key).getValue();
         
         // repeat until put operation is successful
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < MAX_THREADS; i++)
         {
             // the chunk we have might have been in part of split so not accurate
             // we need to iterate the chunks to find the correct chunk following it
@@ -195,7 +195,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		Chunk<K,V> c = skiplist.floorEntry(key).getValue();
         
 		// repeat until put operation is successful
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < MAX_THREADS; i++)
 		{
 			// the chunk we have might have been in part of split so not accurate
 			// we need to iterate the chunks to find the correct chunk following it

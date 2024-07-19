@@ -9,7 +9,7 @@ public class MppRunner {
     final static int MAX_KEY = 10_000_000;
     
     public static void main(String[] args) {
-        System.out.println("Action, Threads, Count");
+        System.out.println("Action, Threads, Count, Slow");
         for (TestKiWi.Action action : TestKiWi.Action.values()) {
             for (int i = 2; i <= 32; i *= 2) {
                 // initialize kiwi map
@@ -20,7 +20,8 @@ public class MppRunner {
                 for (int j = 0; j < 1_000_000; j++)
                     kiwi.put(random.nextInt(MIN_KEY, MAX_KEY), random.nextInt());
                 // test the action on the map
-                TestKiWi.runTest(kiwi, MIN_KEY, MAX_KEY, action, 10_000, i);
+                String result = TestKiWi.runTest(kiwi, MIN_KEY, MAX_KEY, action, 10_000, i) + ", " + kiwi.kiwi.putHelper.GetSlowCounter();
+                System.out.println(result);
             }
         }
     }

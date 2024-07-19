@@ -1,15 +1,20 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+
 public final class PutHelperModule<K extends Comparable<? super K>, V> {
     // maximum number of threads supported
     private final int MAX_THREADS;
     // array for storing help requests from participating threads
     private final AtomicReferenceArray<PutHelpData<K, V>> putHelpArr;
+    // count how many help requests have been received
+    private final AtomicLong slowCounter;
     
     public PutHelperModule(int MAX_THREADS) {
         this.MAX_THREADS = MAX_THREADS;
         this.putHelpArr = new AtomicReferenceArray<>(MAX_THREADS);
+        this.slowCounter = new AtomicLong(0);
     }
     
     // returns a snapshot of the help requests array
@@ -22,6 +27,7 @@ public final class PutHelperModule<K extends Comparable<? super K>, V> {
     
     // adds a new help request to the array
     public void RequestHelp(PutHelpData<K, V> helpData) {
+        this.slowCounter.incrementAndGet();
         int index = (int) Thread.currentThread().getId() % MAX_THREADS;
         putHelpArr.set(index, helpData);
     }
@@ -56,5 +62,9 @@ public final class PutHelperModule<K extends Comparable<? super K>, V> {
             if (min.compareTo(content.key) <= 0 && content.key.compareTo(max) <= 0) keyList.add(content);
         }
         return keyList;
+    }
+    
+    public long GetSlowCounter() {
+        return slowCounter.get();
     }
 }

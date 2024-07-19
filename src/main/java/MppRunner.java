@@ -15,7 +15,8 @@ public class MppRunner {
                 for (int j = 0; j < 1_000_000; j++)
                     kiwi.put(random.nextInt(MIN_KEY, MAX_KEY), random.nextInt());
                 // test the action on the map
-                TestKiWi.runTest(kiwi, MIN_KEY, MAX_KEY, action, 10_000, i);
+                String result = TestKiWi.runTest(kiwi, MIN_KEY, MAX_KEY, action, 10_000, i) + ", " + kiwi.kiwi.putHelper.GetSlowCounter();
+                System.out.println(result);
             }
         }
     }

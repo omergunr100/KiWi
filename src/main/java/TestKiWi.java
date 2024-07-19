@@ -57,7 +57,7 @@ public class TestKiWi extends Thread {
         }
     }
     
-    public static void runTest(KiWiMap kiwi, Integer min_key, Integer max_key, Action action, int ms, int threadsCount) {
+    public static String runTest(KiWiMap kiwi, Integer min_key, Integer max_key, Action action, int ms, int threadsCount) {
         // create all threads
         TestKiWi[] threads = new TestKiWi[threadsCount];
         for (int i = 0; i < threadsCount; i++)
@@ -81,6 +81,6 @@ public class TestKiWi extends Thread {
             }
         }
         // sum up all thread operations and return
-        System.out.println(action + ", " + threadsCount + ", " + Arrays.stream(threads).mapToLong(t -> t.counter).sum());
+        return action + ", " + threadsCount + ", " + Arrays.stream(threads).mapToLong(t -> t.counter).sum();
     }
 }
