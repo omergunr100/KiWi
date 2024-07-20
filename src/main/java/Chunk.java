@@ -70,7 +70,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 	{
 		SortedMap<K, ThreadData.PutData<K,V>> items = new TreeMap<>();
 		// go over thread data of all threads
-		for (int i = 0; i < KiWi.MAX_THREADS; ++i)
+		for (int i = 0; i < MppRunner.NUM_THREADS; ++i)
 		{
 			// make sure data is for a Put operatio
 			ThreadData.PutData<K,V> currPut = putArray[pad(i)];
@@ -125,7 +125,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		ThreadData.PutData<K,V> newestPut = null;
 		int newestVer = Chunk.NONE;
 		// go over thread data of all threads
-		for (int i = 0; i < KiWi.MAX_THREADS; ++i)
+		for (int i = 0; i < MppRunner.NUM_THREADS; ++i)
 		{
 			// make sure data is for a Put operation
 			ThreadData.PutData<K,V> currPut = putArray[pad(i)];
@@ -169,7 +169,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		// get index of current thread
 		// since thread IDs are increasing and changing, we assume threads are created one after another (sequential IDs).
 		// thus, (ThreadID % MAX_THREADS) will return a unique index for each thread in range [0, MAX_THREADS)
-		int idx = (int) (Thread.currentThread().getId() % KiWi.MAX_THREADS);
+		int idx = (int) (Thread.currentThread().getId() % MppRunner.NUM_THREADS);
 		// verify the assumption about sequential IDs
 		// publish into thread array
 		putArray[pad(idx)] = data;
@@ -268,7 +268,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		//this.orderArray = new AtomicIntegerArray(MAX_ITEMS * ORDER_SIZE + FIRST_ITEM);	// initialized to 0, i.e., NONE
 		this.orderArray = new int[MAX_ITEMS * ORDER_SIZE + FIRST_ITEM];
 		this.dataArray = new Object[MAX_ITEMS+ 1];
-		this.putArray = new ThreadData.PutData[KiWi.MAX_THREADS * (PAD_SIZE + 1)];
+		this.putArray = new ThreadData.PutData[MppRunner.NUM_THREADS * (PAD_SIZE + 1)];
 		this.children = new AtomicReference<>(null);
 		this.next = new AtomicMarkableReference<>(null, false);
 		this.minKey = minKey;
@@ -515,7 +515,7 @@ public abstract class Chunk<K extends Comparable<? super K>,V>
 		// prevent new puts to the chunk
 		orderIndex.addAndGet(orderArray.length);
 		// go over thread data of all threads
-		for (int i = 0; i < KiWi.MAX_THREADS; ++i) {
+		for (int i = 0; i < MppRunner.NUM_THREADS; ++i) {
 			// make sure data is for a Put operatio
             ThreadData.PutData<K, V> currPut = putArray[pad(i)];
 			if (currPut == null)

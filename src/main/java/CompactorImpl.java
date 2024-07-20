@@ -8,7 +8,7 @@ import java.util.ListIterator;
 public class CompactorImpl<K extends Comparable<K>,V> implements Compactor<K,V>
 {
     private final int LOW_THRESHOLD = Chunk.MAX_ITEMS/2;
-    private final int HIGH_THRESHOLD = Chunk.MAX_ITEMS - KiWi.MAX_THREADS; // max number of pending scan versions
+    private final int HIGH_THRESHOLD = Chunk.MAX_ITEMS - MppRunner.NUM_THREADS; // max number of pending scan versions
     private final int MAX_RANGE_TO_APPEND = (int)(0.2*Chunk.MAX_ITEMS);
     private Chunk<K,V> lastCheckedForAppend = null;
     public List<Chunk<K,V>> compact(List<Chunk<K,V>> frozenChunks, ScanIndex<K> scanIndex)

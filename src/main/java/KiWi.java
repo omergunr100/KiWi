@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K,V>
 {
 	/*************** Constants ***************/
-	public static int MAX_THREADS = 32;
 	public static final int PAD_SIZE = 640;
 	public static int RebalanceSize = 2;
 
@@ -32,11 +31,11 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		this.skiplist.put(head.minKey, head);	// add first chunk (head) into skiplist
 		this.withScan = withScan;
         
-        this.putHelper = new PutHelperModule<>(MAX_THREADS);
+        this.putHelper = new PutHelperModule<>(MppRunner.NUM_THREADS);
 
 		if (withScan) {
 			//this.threadArray = new ThreadData[MAX_THREADS];
-			this.scanArray = new ThreadData.ScanData[MAX_THREADS * (PAD_SIZE + 1)];
+			this.scanArray = new ThreadData.ScanData[MppRunner.NUM_THREADS * (PAD_SIZE + 1)];
 		}
 		else {
 			//this.threadArray = null;
@@ -82,7 +81,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
         Chunk<K,V> c = skiplist.floorEntry(key).getValue();
         
         // repeat until put operation is successful
-        for (int i = 0; i < MAX_THREADS; i++)
+        for (int i = 0; i < MppRunner.NUM_THREADS; i++)
         {
             // the chunk we have might have been in part of split so not accurate
             // we need to iterate the chunks to find the correct chunk following it
@@ -188,7 +187,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		Chunk<K,V> c = skiplist.floorEntry(key).getValue();
         
 		// repeat until put operation is successful
-        for (int i = 0; i < MAX_THREADS; i++)
+        for (int i = 0; i < MppRunner.NUM_THREADS; i++)
 		{
 			// the chunk we have might have been in part of split so not accurate
 			// we need to iterate the chunks to find the correct chunk following it
@@ -483,12 +482,12 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 	private ArrayList<ThreadData.ScanData> getScansArray(int myVersion)
 	{
 
-		ArrayList<ThreadData.ScanData> pScans = new ArrayList<>(MAX_THREADS);
+		ArrayList<ThreadData.ScanData> pScans = new ArrayList<>(MppRunner.NUM_THREADS);
 		boolean isIncremented = false;
 		int ver = -1;
 
 		// read all pending scans
-		for(int i = 0; i < MAX_THREADS; ++i)
+		for(int i = 0; i < MppRunner.NUM_THREADS; ++i)
 		{
             ThreadData.ScanData scan = scanArray[pad(i)];
 			if(scan != null)  pScans.add(scan);
@@ -518,7 +517,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		TreeSet<Integer> scans = new TreeSet<>();
 		
 		// go over thread data of all threads
-		for (int i = 0; i < MAX_THREADS; ++i)
+		for (int i = 0; i < MppRunner.NUM_THREADS; ++i)
 		{
 			// make sure data is for a Scan operation
             ThreadData.ScanData currScan = scanArray[pad(i)];
@@ -685,7 +684,7 @@ public class KiWi<K extends Comparable<? super K>, V> implements ChunkIterator<K
 		// get index of current thread
 		// since thread IDs are increasing and changing, we assume threads are created one after another (sequential IDs).
 		// thus, (ThreadID % MAX_THREADS) will return a unique index for each thread in range [0, MAX_THREADS)
-		int idx = (int) (Thread.currentThread().getId() % MAX_THREADS);
+		int idx = (int) (Thread.currentThread().getId() % MppRunner.NUM_THREADS);
 		
 		// publish into thread array
 		scanArray[pad(idx)] = data;
