@@ -1,7 +1,7 @@
 import java.util.Random;
 public class MppRunner {
     final static int MIN_KEY = 0;
-    final static int MAX_KEY = 500;
+    final static int MAX_KEY = 10_000_000;
     public static int NUM_THREADS;
     
     public static void main(String[] args) {
